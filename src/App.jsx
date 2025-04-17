@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from './components/Button'
 import { Table } from './components/Table'
 import dayjs from 'dayjs'
@@ -12,6 +12,7 @@ import { getDeviceType } from './utils/getDeviceType'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 
 import './App.css'
+import { Watermark } from './components/Watermark'
 
 function App() {
   const [deviceType, setDeviceType] = useState('')
@@ -19,14 +20,10 @@ function App() {
   const [count, setCount] = useState(0)
   const [babyName, setBabyName] = useState('')
   const [kicks, setKicks] = useState([])
-  const [user, setUser] = useState(() => {
-    const userCookie = Cookies.get('user')
-    return userCookie ? JSON.parse(userCookie) : null
-  })
+  const [user, setUser] = useState(null)
 
   const today = dayjs().format('DD-MM-YYYY')
 
-  // DEVICE & ANALYTICS
   useEffect(() => {
     const type = getDeviceType()
     setDeviceType(type)
@@ -34,97 +31,75 @@ function App() {
     setUserProperties(analytics, { device_type: type })
   }, [])
 
-  // CLOCK
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(dayjs()), 1000)
     return () => clearInterval(interval)
   }, [])
 
-  // INITIAL COOKIE LOAD
-  useEffect(() => {
-    const kicksFromCookie = Cookies.get('kicks')
-    const countCookie = Cookies.get('count')
-    const babyNameCookie = Cookies.get('babyName')
-
-    if (kicksFromCookie) setKicks(JSON.parse(kicksFromCookie))
-    if (countCookie) setCount(JSON.parse(countCookie))
-    if (babyNameCookie) setBabyName(JSON.parse(babyNameCookie))
-  }, [])
-
-  // FIREBASE LOAD ON LOGIN
+  // Sync cookie data to Firestore once on login
   useEffect(() => {
     if (user) {
-      // When the user logs in, check if we have data in cookies and save to Firestore
-      const loadAndSaveUserData = async () => {
-        const userId = user.uid; // Firebase user UID
+      const syncAndLoad = async () => {
+        const userId = user.uid
+        const userRef = doc(db, 'users', userId)
+        const docSnap = await getDoc(userRef)
 
-        // Check if there's data in cookies to save to Firestore
-        const babyNameFromCookie = Cookies.get('babyName');
-        const kicksFromCookie = Cookies.get('kicks');
+        if (!docSnap.exists()) {
+          const cookieBabyName = Cookies.get('babyName')
+          const cookieKicks = Cookies.get('kicks')
+          const parentName = user.displayName
 
-        const parsedBabyName = babyNameFromCookie ? JSON.parse(babyNameFromCookie) : '';
-        if ((parsedBabyName && parsedBabyName.trim() !== '') || kicksFromCookie) {
-          await saveUserData(
-            userId,
-            kicksFromCookie ? JSON.parse(kicksFromCookie) : [],
-            parsedBabyName
-          );
+          const parsedName = cookieBabyName ? JSON.parse(cookieBabyName) : ''
+          const parsedKicks = cookieKicks ? JSON.parse(cookieKicks) : []
+
+          await setDoc(userRef, {
+            babyName: parsedName,
+            kicks: parsedKicks,
+            parentName,
+          })
+
+          setBabyName(parsedName)
+          setKicks(parsedKicks)
+          setCount(parsedKicks.length)
+        } else {
+          const data = docSnap.data()
+          setBabyName(data.babyName || '')
+          setKicks(data.kicks || [])
+          setCount(data.kicks?.length || 0)
         }
 
-        // Load user data from Firestore to ensure the app is up-to-date
-        const userData = await loadUserData(userId);
-
-        // Only set baby name if it's non-empty
-        if (userData.babyName && userData.babyName.trim() !== '') {
-          setBabyName(userData.babyName);
-        }
-
-        setKicks(userData.kicks);
-      };
-
-      loadAndSaveUserData();
-    }
-  }, [user]); // Dependency on `user` to run when the user logs in  
-
-  const saveUserData = async (userId, kicks, babyName) => {
-    if (!babyName || babyName.trim() === '') {
-      alert('Please enter your baby name!');
-      return;
-    }
-
-    const userRef = doc(db, 'users', userId);
-    await setDoc(userRef, { babyName, kicks }, { merge: true });
-  }
-
-  const loadUserData = async (userId) => {
-    const userRef = doc(db, 'users', userId)
-    const userSnap = await getDoc(userRef)
-
-    if (userSnap.exists()) {
-      const userData = userSnap.data()
-      return {
-        babyName: userData.babyName || '',
-        kicks: userData.kicks || [],
+        // Remove stale cookies
+        Cookies.remove('babyName')
+        Cookies.remove('kicks')
+        Cookies.remove('count')
+        Cookies.remove('countsByDate')
       }
-    } else {
-      return { babyName: '', kicks: [] }
+
+      syncAndLoad()
     }
+  }, [user])
+
+  const saveUserData = async (newKicks = kicks, newName = babyName) => {
+    if (!user) return
+    const userRef = doc(db, 'users', user.uid)
+    await setDoc(userRef, {
+      babyName: newName,
+      kicks: newKicks,
+      parentName: user.displayName,
+    }, { merge: true })
   }
 
-  // CLICK HANDLER
-  const handleClick = () => {
-    let nameToUse = babyName.trim() || 'Baby'
-
-    if (!babyName.trim()) {
-      setBabyName(nameToUse)
-      Cookies.set('babyName', JSON.stringify(nameToUse), { expires: 7 })
-    }
+  const handleClick = async () => {
+    const nameToUse = babyName.trim() || 'Baby'
+    setBabyName(nameToUse)
 
     const newKick = {
       id: Date.now(),
       date: today,
       time: dayjs().format('hh:mm:ss A'),
       day: dayjs().format('dddd'),
+      remark: '',
+      deviceType: deviceType,
     }
 
     const updatedKicks = [...kicks, newKick]
@@ -133,28 +108,18 @@ function App() {
     setKicks(updatedKicks)
     setCount(updatedCount)
 
-    Cookies.set('count', JSON.stringify(updatedCount), { expires: 7 })
-    Cookies.set('kicks', JSON.stringify(updatedKicks), { expires: 7 })
-
-    const countsCookie = Cookies.get('countsByDate')
-    const countsByDate = countsCookie ? JSON.parse(countsCookie) : {}
-    countsByDate[today] = (countsByDate[today] || 0) + 1
-    Cookies.set('countsByDate', JSON.stringify(countsByDate), { expires: 7 })
-
-    if (user) {
-      saveUserData(user.id, updatedKicks, nameToUse)
-    }
+    await saveUserData(updatedKicks, nameToUse)
 
     logEvent(analytics, 'kick_count', {
       user_name: nameToUse,
-      time: dayjs().format('hh:mm:ss A'),
+      time: newKick.time,
     })
   }
 
-
   const handleBabyNameChange = (e) => {
-    setBabyName(e.target.value)
-    Cookies.set('babyName', JSON.stringify(e.target.value), { expires: 7 })
+    const value = e.target.value
+    setBabyName(value)
+    saveUserData(kicks, value)
   }
 
   const handleDownloadCSV = () => {
@@ -195,14 +160,12 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (!window.confirm('Are you sure you want to reset all data?')) return
-    Cookies.remove('babyName')
-    Cookies.remove('count')
-    Cookies.remove('kicks')
     setBabyName('')
     setCount(0)
     setKicks([])
+    await saveUserData([], '')
   }
 
   const yesterday = dayjs().subtract(1, 'day').format('DD-MM-YYYY')
@@ -219,7 +182,8 @@ function App() {
       ? `${percentChange}% more than`
       : `${Math.abs(percentChange)}% less than`
 
-  const allCookies = Cookies.get()
+  const userName = useMemo(() => user?.displayName || 'Parent', [user])
+  const userPhoto = useMemo(() => user?.photoURL || '/app-icon.png', [user])
 
   if (!user) {
     return (
@@ -228,8 +192,15 @@ function App() {
         <h1 className="text-xl md:text-3xl font-bold text-center">Welcome to Baby Kick Tracker</h1>
         <GoogleLogin onLogin={setUser} />
         <p className="text-xs text-center p-4">It's 100% free! Please enable cookies to continue. Free Palestine!</p>
+        <Watermark />
       </div>
     )
+  }
+
+  const handleEditKick = async (updatedKick) => {
+    const updatedList = kicks.map((k) => (k.id === updatedKick.id ? updatedKick : k))
+    setKicks(updatedList)
+    await saveUserData(updatedList, babyName)
   }
 
   return (
@@ -237,8 +208,12 @@ function App() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-[var(--text-primary)] shadow-md mb-4 flex justify-between items-center px-4 py-2">
         <div className="flex items-center gap-4">
-          <img className="size-8 border border-[var(--primary)] rounded-full" src={user.photo} alt={user.name} />
-          <h1 className="text-sm font-bold text-white">Hello, {user.name}</h1>
+          <img
+            className="size-8 border border-[var(--primary)] rounded-full"
+            src={userPhoto}
+            alt={userName}
+          />
+          <h1 className="text-sm font-bold text-white">Hello, {userName}</h1>
         </div>
         <button
           onClick={() => {
@@ -271,7 +246,7 @@ function App() {
           </p>
 
           <div className="sm:w-full md:w-3/4">
-            <Table kicks={kicks} />
+            <Table kicks={kicks} onEditKick={handleEditKick} />
           </div>
 
           {kicks.length > 0 && (
@@ -298,7 +273,7 @@ function App() {
 
         <CookieConsent />
 
-        {Object.keys(allCookies).length > 1 && (
+        {kicks.length > 0 && (
           <div className="text-center mt-8">
             <button
               onClick={handleReset}
@@ -309,13 +284,7 @@ function App() {
           </div>
         )}
 
-        <p className="my-12 text-sm text-center text-[var(--text-primary)]">
-          Designed with ❤️ for all parents by{' '}
-          <a href="https://azhansyakirin.dev/" target="_blank" className="text-[var(--primary)]">
-            Azhan Syakirin
-          </a>
-          .
-        </p>
+        <Watermark />
       </div>
     </>
   )

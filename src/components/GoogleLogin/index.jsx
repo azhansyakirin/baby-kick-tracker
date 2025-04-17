@@ -10,6 +10,7 @@ const LoginButton = ({ onLogin }) => {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
             Cookies.set('user', JSON.stringify({
+                uid: user.uid,
                 name: user.displayName,
                 email: user.email,
                 photo: user.photoURL

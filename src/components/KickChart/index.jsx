@@ -3,7 +3,6 @@ import {
 } from 'recharts';
 
 const KickChart = ({ summaryMap }) => {
-  console.log('summaryMap', summaryMap);
   const data = Object.entries(summaryMap).map(([date, { count }]) => ({
     date,
     count,

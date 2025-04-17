@@ -10,6 +10,9 @@ export const Button = ({ onClick }) => {
                 src="/feet.webp"
                 className="w-full h-full object-contain overflow-hidden"
                 alt="Press Here"
+                title="Press Here"
+                draggable="false"
+                loading="lazy"
             />
         </button>
     )
