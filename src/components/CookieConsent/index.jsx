@@ -33,7 +33,7 @@ const CookieConsent = () => {
         return (
             <button
                 onClick={handleOpen}
-                className="fixed bottom-4 left-4 z-50 bg-[var(--secondary)] p-2 rounded-full shadow-md hover:scale-105 transition"
+                className="fixed bottom-4 left-4 z-50 bg-[var(--text-primary)] p-2 rounded-full shadow-md hover:scale-105 transition"
             >
                 <img className="size-6" src="/cookies.svg" alt="Cookies" />
             </button>
@@ -44,7 +44,7 @@ const CookieConsent = () => {
     if (!visible) return null;
 
     return (
-        <div className="fixed max-w-2/4 bottom-4 left-4 right-4 bg-[#26262B] text-white rounded-lg shadow-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 z-50">
+        <div className="fixed max-w-2/4 bottom-4 left-4 right-4 bg-[var(--text-primary)] text-white rounded-lg shadow-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 z-50">
             <p className="text-sm font-[Poppins] flex items-start gap-2 text-left">
                 <img className="size-6 mt-[2px] shrink-0" src="/cookies.svg" alt="cookie icon" />
                 <span>
@@ -53,7 +53,7 @@ const CookieConsent = () => {
             </p>
             <button
                 onClick={handleAccept}
-                className="bg-white font-[Poppins] tracking-tight text-sm text-[#26262B] px-4 py-1 rounded hover:bg-gray-200 cursor-pointer transition"
+                className="bg-white font-[Poppins] tracking-tight text-sm text-[var(--text-primary)] px-4 py-1 rounded hover:bg-gray-200 cursor-pointer transition"
             >
                 Accept
             </button>
