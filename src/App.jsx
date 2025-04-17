@@ -227,7 +227,7 @@ function App() {
       </div>
 
       {/* Main Content */}
-      <div className="text-textDark px-4 py-8">
+      <div className="px-4 py-8">
         <div className="p-4 md:p-16 flex flex-col gap-4 items-center justify-center w-full">
           <p className="text-sm tracking-tight text-center">{currentTime.format('dddd DD-MMMM-YYYY hh:mm:ss A')}</p>
 
@@ -236,17 +236,20 @@ function App() {
             value={babyName}
             onChange={handleBabyNameChange}
             placeholder="Enter your baby name"
-            className="w-full px-4 py-2 uppercase tracking-widest text-3xl text-center border-none outline-none"
+            className="w-full px-4 py-2 uppercase tracking-widest text-xl md:text-3xl text-center border-none outline-none"
           />
 
           <Button onClick={handleClick} />
 
           <p className="text-2xl text-center">
-            Your baby kick{dailyCount !== 1 ? 's' : ''} {dailyCount} times today — {trend} yesterday!
+            Your baby kick {dailyCount} time{dailyCount !== 1 ? 's' : ''} today — {trend} yesterday!
           </p>
 
-          <div className="sm:w-full md:w-3/4">
-            <Table kicks={kicks} onEditKick={handleEditKick} />
+          <div className="table-none md:table-fixed rounded-md border-2 border-[var(--text-primary)] shadow-md overflow-x-scroll">
+            <Table
+              kicks={kicks}
+              onEditKick={handleEditKick}
+            />
           </div>
 
           {kicks.length > 0 && (
