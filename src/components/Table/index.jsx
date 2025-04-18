@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Modal from '../Modal'
 import * as Dialog from '@radix-ui/react-dialog'
 
-export const Table = ({ kicks = [], onEditKick }) => {
+export const Table = ({ kicks = [], onEditKick, onDeleteKick }) => {
   const [selectedKick, setSelectedKick] = useState(null)
   const [editedTime, setEditedTime] = useState('')
   const [editedRemarks, setEditedRemarks] = useState('')
@@ -49,10 +49,10 @@ export const Table = ({ kicks = [], onEditKick }) => {
             <td className="px-4 py-2 border-b">{index + 1}</td>
             <td className="px-4 py-2 border-b">{kick.date} ({kick.day})</td>
             <td className="px-4 py-2 border-b">{kick.time}</td>
-            <td className="px-4 py-2 border-b hidden md:table-cell">{kick.remarks || '-'}</td>
+            <td className="px-4 py-2 border-b hidden md:table-cell remarks-cell">{kick.remarks || '-'}</td>
             <td className="px-4 py-2 border-b">
               <Modal
-                title={<div className='inline-flex gap-2'><img src="/feet.webp" className='size-6' />Edit Kick Entry</div>}
+                title={<div className='inline-flex gap-2'><img src="/feet-dark.webp" className='size-6' />Edit Kick Entry</div>}
                 trigger={
                   <button
                     onClick={() => handleTriggerClick(kick)}
@@ -63,6 +63,15 @@ export const Table = ({ kicks = [], onEditKick }) => {
                 }
                 footer={
                   <>
+                    <button
+                      onClick={() => {
+                        onDeleteKick(kick.id)
+                        setSelectedKick(null)
+                      }}
+                      className="px-4 py-1 border bg-red-500 text-white hover:bg-white hover:text-red-600 hover:border-red-600 cursor-pointer rounded mr-auto"
+                    >
+                      Delete
+                    </button>
                     <Dialog.Close asChild>
                       <button
                         onClick={() => setSelectedKick(null)}
