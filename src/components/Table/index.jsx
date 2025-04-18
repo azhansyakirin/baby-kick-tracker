@@ -83,7 +83,12 @@ export const Table = ({ kicks = [], onEditKick, onDeleteKick }) => {
                     <Dialog.Close asChild>
                       <button
                         onClick={handleSave}
-                        className="px-4 py-1 bg-[var(--text-primary)] text-white hover:bg-[var(--text-primary)] hover:shadow-md cursor-pointer rounded"
+                        disabled={editedRemarks.length > 150}
+                        className={`px-4 py-1 rounded text-white cursor-pointer 
+    ${editedRemarks.length > 150
+                            ? 'bg-gray-300 cursor-not-allowed'
+                            : 'bg-[var(--text-primary)] hover:shadow-md'}
+  `}
                       >
                         Save
                       </button>
@@ -112,9 +117,16 @@ export const Table = ({ kicks = [], onEditKick, onDeleteKick }) => {
                   <label className="text-sm font-semibold block mb-1">Remarks</label>
                   <textarea
                     value={editedRemarks}
-                    onChange={(e) => setEditedRemarks(e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 150) {
+                        setEditedRemarks(e.target.value)
+                      }
+                    }}
                     className="w-full px-2 py-1 rounded border"
                   />
+                  <div className="text-right text-xs text-gray-400">
+                    {editedRemarks.length} / 150
+                  </div>
                 </div>
               </Modal>
             </td>
