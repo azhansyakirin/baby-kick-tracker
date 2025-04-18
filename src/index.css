@@ -12,7 +12,7 @@
   --text-secondary: #3e2c23;
   --highlight: #a47148;
 
-  font-family: "Chilanka", "Poppins", "Schoolbell", sans-serif;
+  font-family: "Chilanka", "Poppins", system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -34,5 +34,28 @@
 
   ::selection {
     background-color: var(--primary);
+  }
+
+  section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  main {
+    @media (max-width: 575px) {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+
+  .remarks-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20rem;
   }
 }
