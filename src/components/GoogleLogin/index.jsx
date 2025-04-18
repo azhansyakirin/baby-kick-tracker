@@ -25,7 +25,7 @@ const LoginButton = ({ onLogin }) => {
     return (
         <button
             onClick={handleLogin}
-            className="max-w-[320px] font-[Poppins] flex items-center gap-3 px-6 py-2 text-sm font-bold cursor-pointer text-[var(--text-primary)] uppercase bg-white border border-[var(--text-primary)] rounded-lg transition-transform duration-300 ease-in-out hover:shadow-xl"
+            className="max-w-[320px] active:scale-95 font-[Poppins] flex items-center gap-3 px-6 py-2 text-sm font-bold text-[var(--text-primary)] uppercase bg-white border border-[var(--text-primary)] rounded-lg transition-transform duration-300 ease-in-out hover:shadow-xl"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
