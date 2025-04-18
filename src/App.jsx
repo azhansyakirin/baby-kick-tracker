@@ -90,6 +90,7 @@ function App() {
   }
 
   const handleClick = async () => {
+    navigator.vibrate?.(50);
     const nameToUse = babyName.trim() || 'Baby'
     setBabyName(nameToUse)
 
