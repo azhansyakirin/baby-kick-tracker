@@ -89,8 +89,15 @@ function App() {
     }, { merge: true })
   }
 
+  let lastTap = 0;
+
   const handleClick = async () => {
     navigator.vibrate?.(50);
+
+    const now = Date.now();
+    if (now - lastTap < 500) return;
+    lastTap = now;
+
     const nameToUse = babyName.trim() || 'Baby'
     setBabyName(nameToUse)
 
