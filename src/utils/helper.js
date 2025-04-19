@@ -15,10 +15,6 @@ export const groupKicksByDate = (kicks) => {
     return acc
   }, {})
 
-  console.log('groupKicksByDate', Object.entries(grouped).sort((a, b) =>
-    dayjs(b[0], 'DD-MM-YYYY').diff(dayjs(a[0], 'DD-MM-YYYY'))
-  ))
-
   return Object.entries(grouped).sort((a, b) =>
     dayjs(b[0], 'DD-MM-YYYY').diff(dayjs(a[0], 'DD-MM-YYYY'))
   )
@@ -28,8 +24,6 @@ export const generateSummaryMap = (kicks) => {
   return kicks.reduce((map, { date, day }) => {
     if (!map[date]) map[date] = { count: 0, day }
     map[date].count++
-
-    console.log('generateSummaryMap', map)
     return map
   }, {})
 }
