@@ -12,14 +12,17 @@ import { getDeviceType } from './utils/getDeviceType'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { Watermark } from './components/Watermark'
 import { groupKicksByDate, sortKicks, generateSummaryMap } from './utils/helper'
+import Modal from './components/Modal'
 
 import './App.css'
+import SummaryReport from './components/SummaryReport'
 
 function App() {
   const [deviceType, setDeviceType] = useState('')
   const [currentTime, setCurrentTime] = useState(dayjs())
   const [count, setCount] = useState(0)
   const [babyName, setBabyName] = useState('')
+  const [babyGender, setBabyGender] = useState('boy')
   const [kicks, setKicks] = useState([])
   const [user, setUser] = useState(null)
   const [activeTab, setActiveTab] = useState('today')
@@ -84,6 +87,7 @@ function App() {
     const userRef = doc(db, 'users', user.uid)
     await setDoc(userRef, {
       babyName: newName,
+      babyGender: babyGender,
       kicks: newKicks,
       parentName: user.displayName,
     }, { merge: true })
@@ -218,12 +222,10 @@ function App() {
     }
   }, [activeTab, kicks, sortedKicks, today])
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      console.table(filteredKicks)
-    }, 300)
-    return () => clearTimeout(timeout)
-  }, [filteredKicks])
+
+  const handleGenderChange = (event) => {
+    setBabyGender(event.target.value);
+  };
 
 
   return (
@@ -256,7 +258,7 @@ function App() {
 
           <main>
 
-            <section id="action" className='flex flex-col items-center gap-4 justify-center'>
+            <section id="action" className='flex flex-col items-center gap-8 justify-center'>
               <p className="text-sm tracking-tight text-center">{currentTime.format('dddd DD-MMMM-YYYY hh:mm:ss A')}</p>
               <input
                 type="text"
@@ -265,6 +267,40 @@ function App() {
                 placeholder="Enter your baby name"
                 className="w-full px-4 py-2 uppercase tracking-widest text-xl md:text-3xl text-center border-none outline-none"
               />
+              <div className="flex items-center justify-center space-x-6">
+                <label
+                  htmlFor="boy"
+                  className={`cursor-pointer inline-flex items-center justify-center px-12 pt-2 border rounded-lg text-3xl font-semibold transition-all duration-200 ${babyGender === 'boy' ? 'bg-[var(--text-primary)]' : ''
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="gender"
+                    id="boy"
+                    value="boy"
+                    checked={babyGender === 'boy'}
+                    onChange={handleGenderChange}
+                    className="hidden"
+                  />
+                  👦
+                </label>
+                <label
+                  htmlFor="girl"
+                  className={`cursor-pointer inline-flex items-center justify-center px-12 pt-2 border rounded-lg text-3xl font-semibold transition-all duration-200 ${babyGender === 'girl' ? 'bg-[var(--text-primary)]' : ''
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name="gender"
+                    id="girl"
+                    value="girl"
+                    checked={babyGender === 'girl'}
+                    onChange={handleGenderChange}
+                    className="hidden"
+                  />
+                  👧
+                </label>
+              </div>
               <Button onClick={handleClick} />
               <p className="text-2xl text-center">
                 Your baby kick {dailyCount} time{dailyCount !== 1 ? 's' : ''} today — {trend} yesterday!
@@ -310,6 +346,20 @@ function App() {
                 </div>
               )}
             </section>
+
+            {kicks.length > 0 && (
+              <section id="summary-report" className='flex flex-col items-center justify-center gap-4'>
+                <p>View and share your summarize report to doctor instantly!</p>
+                <Modal
+                  trigger={<button className="border px-4 py-2 rounded hover:bg-[var(--primary)] transition active:scale-95">View Summary</button>}
+                  title="Summary Report"
+                >
+                  <div id="summary">
+                    <SummaryReport babyName={babyName} gender={babyGender} kickData={kicks} />
+                  </div>
+                </Modal>
+              </section>
+            )}
 
             <section>
               {Object.keys(generateSummaryMap(kicks)).length > 0 && (
