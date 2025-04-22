@@ -41,46 +41,41 @@ function App() {
     return () => clearInterval(interval)
   }, [])
 
+  /* this is where user data loaded, and setup for new users */
   useEffect(() => {
-    if (user) {
-      const syncAndLoad = async () => {
-        const userId = user.uid
-        const userRef = doc(db, 'users', userId)
-        const docSnap = await getDoc(userRef)
+    if (!user) return;
 
-        if (!docSnap.exists()) {
-          const cookieBabyName = Cookies.get('babyName')
-          const cookieKicks = Cookies.get('kicks')
-          const parentName = user.displayName
+    const loadUserData = async () => {
+      const userId = user.uid;
+      const userRef = doc(db, 'users', userId);
+      const docSnap = await getDoc(userRef);
 
-          const parsedName = cookieBabyName ? JSON.parse(cookieBabyName) : ''
-          const parsedKicks = cookieKicks ? JSON.parse(cookieKicks) : []
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setBabyName(data.babyName || '');
+        setKicks(data.kicks || []);
+        setCount(data.kicks?.length || 0);
+      } else {
+        await setDoc(userRef, {
+          babyName: '',
+          kicks: [],
+          parentName: user.displayName || '',
+          createdAt: Date.now(),
+        });
 
-          await setDoc(userRef, {
-            babyName: parsedName,
-            kicks: parsedKicks,
-            parentName,
-          })
-
-          setBabyName(parsedName)
-          setKicks(parsedKicks)
-          setCount(parsedKicks.length)
-        } else {
-          const data = docSnap.data()
-          setBabyName(data.babyName || '')
-          setKicks(data.kicks || [])
-          setCount(data.kicks?.length || 0)
-        }
-
-        Cookies.remove('babyName')
-        Cookies.remove('kicks')
-        Cookies.remove('count')
-        Cookies.remove('countsByDate')
+        setBabyName('');
+        setKicks([]);
+        setCount(0);
       }
 
-      syncAndLoad()
-    }
-  }, [user])
+      Cookies.remove('babyName');
+      Cookies.remove('kicks');
+      Cookies.remove('count');
+      Cookies.remove('countsByDate');
+    };
+
+    loadUserData();
+  }, [user]);
 
   const saveUserData = async (newKicks = kicks, newName = babyName) => {
     if (!user) return
@@ -226,7 +221,6 @@ function App() {
   const handleGenderChange = (event) => {
     setBabyGender(event.target.value);
   };
-
 
   return (
     <>
