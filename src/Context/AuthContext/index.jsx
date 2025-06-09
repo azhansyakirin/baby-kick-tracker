@@ -10,18 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [deviceType, setDeviceType] = useState(null);
 
   useEffect(() => {
-    const cookieUser = Cookies.get('user');
-
     const device = getDeviceType();
-
-    if (cookieUser) {
-      try {
-        setUser(JSON.parse(cookieUser));
-        setDeviceType(device);
-      } catch (e) {
-        console.error('Failed to parse user cookie', e);
-      }
-    }
+    setDeviceType(device);
   }, []);
 
   return (

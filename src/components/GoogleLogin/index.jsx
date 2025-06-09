@@ -1,21 +1,12 @@
 // src/components/LoginButton.jsx
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../config/firebase'; // Adjust the import path as necessary
-import Cookies from 'js-cookie';
-
 
 const LoginButton = ({ onLogin }) => {
     const handleLogin = async () => {
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-            Cookies.set('user', JSON.stringify({
-                uid: user.uid,
-                name: user.displayName,
-                email: user.email,
-                photo: user.photoURL
-            }), { expires: 7 });
-
             onLogin(user);
         } catch (err) {
             console.error('Login failed:', err);
