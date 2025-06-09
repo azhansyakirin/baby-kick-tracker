@@ -12,16 +12,18 @@ import { Login } from './Login';
 import { YourAppointments } from './YourAppointments';
 import { YourBaby } from './YourBaby';
 import { YourProfile } from './YourProfile';
-import { YourJourney} from './YourJourney';
-import { YourRecords} from './YourRecords';
+import { YourJourney } from './YourJourney';
+import { YourRecords } from './YourRecords';
 import { Loader } from '../components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { PrivateLayout } from '../components/Layout/PrivateLayout';
+import { useBaby } from '../Context/BabyContext';
 
 const PrivateRoute = () => {
   const { user } = useAuth();
+  const { loading: babyLoading } = useBaby();
   return user ?
-    <PrivateLayout>
+    <PrivateLayout loading={babyLoading}>
       <Outlet />
     </PrivateLayout>
     : <Navigate to="/login" replace />;
@@ -29,12 +31,23 @@ const PrivateRoute = () => {
 
 const LoginWrapper = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+
+  const handleLogin = (userData) => {
+
+    const parseUser = {
+      uid: userData.uid,
+      name: userData.displayName,
+      email: userData.email,
+      photo: userData.photoURL
+    }
+    setUser(parseUser);
+    navigate('/home');
+  };
 
   if (user) return <Navigate to="/home" replace />;
-  const onLogin = () => navigate('/home');
 
-  return <Login onLogin={onLogin} />;
+  return <Login onLogin={handleLogin} />;
 };
 
 const RootRouter = () => {
@@ -53,9 +66,9 @@ const RootRouter = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/baby" element={<YourBaby />} />
             <Route path="/appointments" element={<YourAppointments />} />
-            <Route path="/records" element={<YourRecords/>} />
-            <Route path="/journey" element={<YourJourney/>} />
-            <Route path="/profile" element={<YourProfile/>} />
+            <Route path="/records" element={<YourRecords />} />
+            <Route path="/journey" element={<YourJourney />} />
+            <Route path="/profile" element={<YourProfile />} />
           </Route>
 
           {!user && <Route path="*" element={<Navigate to="/login" replace />} />}
