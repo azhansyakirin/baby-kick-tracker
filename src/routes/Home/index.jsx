@@ -22,7 +22,6 @@ export const Home = () => {
     kicks,
     setKicks,
     saveUserData,
-    handleDebouncedSave,
     count,
     setCount,
   } = useBaby();
