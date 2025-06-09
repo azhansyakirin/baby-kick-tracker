@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from '../../config/firebase';
 import { useAuth } from '../AuthContext';
-import Cookies from 'js-cookie';
 
 const BabyDataContext = createContext();
 
@@ -15,8 +14,10 @@ export const BabyDataProvider = ({ children }) => {
   const [kicks, setKicks] = useState([]);
   const [count, setCount] = useState(0);
   const updateTimeoutRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true)
     if (!user) { console.log("No User Data"); return };
 
     const loadUserData = async () => {
@@ -39,22 +40,22 @@ export const BabyDataProvider = ({ children }) => {
           createdAt: Date.now(),
         });
       }
-
-      Cookies.remove('babyName');
-      Cookies.remove('kicks');
-      Cookies.remove('count');
-      Cookies.remove('countsByDate');
+      setLoading(false);
     };
 
     loadUserData();
   }, [user]);
 
   useEffect(() => {
-    if (!user) return;
-    if (!babyName && kicks.length === 0 && !babyGender) return;
+    if (!user || !loading) return;
 
-    handleDebouncedSave(kicks, babyName, babyGender);
-  }, [kicks, babyName, babyGender, user]);
+    const hasData =
+      babyName.trim() !== '' || babyGender.trim() !== '' || kicks.length > 0;
+
+    if (hasData) {
+      handleDebouncedSave(kicks, babyName, babyGender);
+    }
+  }, [kicks, babyName, babyGender, user, loading]);
 
   const saveUserData = async (
     updatedKicks = kicks,
@@ -62,13 +63,6 @@ export const BabyDataProvider = ({ children }) => {
     updatedGender = babyGender
   ) => {
     if (!user) return;
-
-    console.log('📝 saveUserData CALLED with:', {
-      updatedName,
-      updatedGender,
-      updatedKicks,
-      parentName: user.name,
-    });
 
     await setDoc(doc(db, 'users', user.uid), {
       babyName: updatedName ?? '',
@@ -78,11 +72,8 @@ export const BabyDataProvider = ({ children }) => {
     }, { merge: true });
   };
 
-
-
   const handleDebouncedSave = (updatedKicks) => {
     if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
-    console.log('⏳ Debounced save triggered with kicks:', updatedKicks);
     updateTimeoutRef.current = setTimeout(() => {
       saveUserData(updatedKicks);
     }, 500);
@@ -101,9 +92,10 @@ export const BabyDataProvider = ({ children }) => {
         handleDebouncedSave,
         count,
         setCount,
+        loading,
       }}
     >
       {children}
     </BabyDataContext.Provider>
-  );
-};
+  )
+}
