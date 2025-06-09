@@ -1,8 +1,9 @@
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext"
 import { Sidebar } from "../Sidebar"
+import { Loader } from "../Loader";
 
-export const PrivateLayout = ({ children }) => {
+export const PrivateLayout = ({ children, loading }) => {
 
   const { setUser } = useAuth();
   const location = useLocation();
@@ -18,6 +19,7 @@ export const PrivateLayout = ({ children }) => {
 
   return (
     <div className="flex flex-row max-w-screen overflow-hidden box-border min-h-screen">
+      {loading && <Loader/>}
       <Sidebar handleLogoutUser={() => setUser(null)} />
       <main className="flex-1 md:ml-16 p-4 box-content min-w-0 overflow-x-auto">
         <div>
