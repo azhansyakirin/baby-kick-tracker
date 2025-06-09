@@ -27,7 +27,7 @@ export const Sidebar = ({ handleLogoutUser }) => {
               'bg-[var(--text-primary)] text-white': location.pathname === path,
               'bg-[var(--background)]': location.pathname !== path,
             },
-              "active:scale-95 transition cursor-pointer size-12 rounded-md shadow-xs flex items-center justify-center text-center")}>
+              "md:hover:bg-[var(--text-primary)] md:hover:text-white duration-300 ease active:scale-95 transition cursor-pointer size-12 rounded-md shadow-xs flex items-center justify-center text-center")}>
               <Link to={path} title={label}>
                 <Icons name={icon} />
               </Link>
@@ -48,13 +48,13 @@ export const Sidebar = ({ handleLogoutUser }) => {
                 </svg>
               }
             </li>
-            <li className="size-12 rounded-md bg-[var(--background)] shadow-xs flex items-center justify-center text-center">
+            <li className="size-12 rounded-md bg-[var(--background)] shadow-xs flex items-center justify-center text-center md:hover:bg-[var(--text-primary)] md:hover:text-white duration-300 ease cursor-pointer active:scale-95 transition">
               <button
                 onClick={() => {
                   Cookies.remove('user');
                   handleLogoutUser();
                 }}
-                className="active:scale-95 transition"
+                className=""
                 title='Logout'
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
