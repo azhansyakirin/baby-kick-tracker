@@ -257,8 +257,6 @@ export const Home = () => {
           </div>
         )}
       </section>
-
-      <Watermark />
     </>
   );
 }
