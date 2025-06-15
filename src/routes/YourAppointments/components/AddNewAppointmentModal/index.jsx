@@ -3,7 +3,7 @@ import Modal from "../../../../components/Modal";
 import { useAppointment } from "../../../../Context/AppointmentsContext";
 import { v4 as uuidv4 } from "uuid";
 import { Loader } from "../../../../components/Loader";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 
 export const AddNewAppointmentModal = ({ trigger }) => {
   
@@ -18,7 +18,7 @@ export const AddNewAppointmentModal = ({ trigger }) => {
     doctor: "",
     notes: "",
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
