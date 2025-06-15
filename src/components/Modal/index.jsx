@@ -1,8 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-export default function Modal({ trigger, title, children, footer }) {
+export default function Modal({ trigger, title, children, footer , open, onOpenChange}) {
   return (
-    <Dialog.Root>
+    <Dialog.Root  open={open} onOpenChange={onOpenChange}>
       <Dialog.Trigger asChild>
         {trigger}
       </Dialog.Trigger>
