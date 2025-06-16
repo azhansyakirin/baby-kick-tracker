@@ -4,6 +4,7 @@ import { useAppointment } from '../../Context/AppointmentsContext';
 import { AddNewAppointmentModal } from './components/AddNewAppointmentModal';
 import dayjs from 'dayjs';
 import clsx from 'clsx';
+import Modal from '../../components/Modal';
 
 export const YourAppointments = () => {
   const { appointments } = useAppointment();
@@ -17,7 +18,7 @@ export const YourAppointments = () => {
   }
 
   return (
-    <div id="appointment-page" className="relative my-4 grid md:grid-cols-[3fr_1fr] grid-cols-1 gap-4 font-[Inter]">
+    <div id="appointment-page" className="my-4 grid md:grid-cols-[3fr_1fr] grid-cols-1 gap-4 font-[Inter]">
 
       {/* Appointment List */}
       <div className="flex flex-col gap-2">
@@ -112,16 +113,13 @@ export const YourAppointments = () => {
 
       {/* Mobile Drawer */}
       {drawerOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/20 z-40"
-            onClick={() => setDrawerOpen(false)}
-          />
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl p-6 shadow-lg max-h-[80vh] overflow-y-auto md:hidden transition-transform animate-slideUp">
+        <Modal open={drawerOpen} onOpenChange={() => setDrawerOpen(prev => !prev)}>
+          <div className="fixed inset-0" />
+          <div className=" p-1 shadow-lg max-h-[80vh] overflow-y-auto md:hidden transition-transform animate-slideUp">
             <div className="flex justify-between items-center mb-4">
               <div className="font-semibold text-lg">{dayjs(panelData.date).format('DD-MM-YYYY | dddd')}</div>
             </div>
-            <div className="space-y-3 text-sm text-gray-500">
+            <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2">
                 <Icons name="clock" /><span>{panelData.appointmentTime || `${panelData.startTime} – ${panelData.endTime}`}</span>
               </div>
@@ -137,7 +135,7 @@ export const YourAppointments = () => {
               <div className="pt-2">{panelData?.notes}</div>
             </div>
           </div>
-        </>
+        </Modal>
       )}
     </div>
   );

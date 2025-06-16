@@ -19,7 +19,7 @@ export const Sidebar = ({ handleLogoutUser }) => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white rounded-t-lg shadow-md p-1 flex md:flex-col md:top-0 md:left-0 md:h-full md:w-16">
-      <div className="flex h-full flex-row md:flex-col justify-between items-center sm:overflow-x-auto">
+      <div className="flex h-full flex-row md:flex-col gap-2 justify-between items-center sm:overflow-x-auto">
         <ul className="flex flex-row md:flex-col justify-center items-center gap-2">
           {appPath.map(({ id, path, label, icon }) => (
             <li key={id} className={clsx({
