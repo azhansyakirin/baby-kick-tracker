@@ -6,9 +6,9 @@ import { Loader } from "../../../../components/Loader";
 import toast from "react-hot-toast";
 
 export const AddNewAppointmentModal = ({ trigger }) => {
-  
+
   const { addAppointment } = useAppointment();
-  
+
   const [form, setForm] = useState({
     date: "",
     appointmentTime: "",
@@ -36,7 +36,7 @@ export const AddNewAppointmentModal = ({ trigger }) => {
 
     try {
 
-      if(!form.date || !form.purpose) throw new Error('Please do not leave field blank');
+      if (!form.date || !form.purpose) throw new Error('Please do not leave field blank');
 
       const newAppointment = {
         id: uuidv4(),
@@ -65,7 +65,7 @@ export const AddNewAppointmentModal = ({ trigger }) => {
     }
   };
 
-  const defaultInputDiv = `flex flex-col my-1`;
+  const defaultInputDiv = `flex flex-col md:my-1`;
   const defaultInputClass = `py-3 px-4 rounded-xl border`;
 
   return (
@@ -75,22 +75,22 @@ export const AddNewAppointmentModal = ({ trigger }) => {
       footer={null}
       open={open}
       onOpenChange={setOpen}
-      
+
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm font-[Inter] px-4">
-        <div className="grid grid-cols-2 gap-4">
-        <div className={defaultInputDiv}>
-          <label>Date</label>
-          <input
-            type="date"
-            name="date"
-            value={form.date}
-            onChange={handleChange}
-            required
-            className={defaultInputClass}
-            placeholder="Select your date"
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm font-[Inter] md:px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-4">
+          <div className={defaultInputDiv}>
+            <label>Date</label>
+            <input
+              type="date"
+              name="date"
+              value={form.date}
+              onChange={handleChange}
+              required
+              className={defaultInputClass}
+              placeholder="Select your date"
+            />
+          </div>
           <div className={defaultInputDiv}>
             <label>Time</label>
             <input
@@ -103,7 +103,7 @@ export const AddNewAppointmentModal = ({ trigger }) => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-[3fr_2fr] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-1 md:gap-4">
           <div className={defaultInputDiv}>
             <label>Location</label>
             <input type="text" name="location" placeholder="Hospital Tanah Merah" value={form.location} onChange={handleChange} required className={defaultInputClass} />
