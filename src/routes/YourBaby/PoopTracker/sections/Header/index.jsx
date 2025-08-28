@@ -7,7 +7,7 @@ export const Header = ({ handleToggleAddLog }) => {
           <p>Track your baby poop time and behaviour. For more information, you can read more <a className="underline" href="/TAP-Baby-Poop-Colour-Guide.webp" target="_blank">here</a>.</p>
         </div>
         <button className="text-[var(--text-primary)] inline-flex items-center gap-1 text-sm font-medium border px-4 py-2 rounded-lg hover:bg-[var(--primary)]" onClick={handleToggleAddLog}>
-          Add New Log
+          Add New Diaper Change
         </button>
       </div>
     </>

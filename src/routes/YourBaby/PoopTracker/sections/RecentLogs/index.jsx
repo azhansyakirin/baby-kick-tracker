@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import dayjs from "dayjs";
-import { LucideBean, LucideChevronLeftCircle, LucideChevronRightCircle, LucideDroplet, LucideDroplets, LucideTrash2 } from "lucide-react";
+import { LucideBean, LucideChevronLeftCircle, LucideChevronRightCircle, LucideDroplets, LucideTrash2 } from "lucide-react";
 
 export const RecentLogs = ({ recentLogs, deleteRecord }) => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -32,14 +32,22 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
       : recentLogs;
   }, [recentLogs, selectedDate]);
 
-  const totalPages = Math.ceil(filteredLogs.length / pageSize);
+  const sortedLogs = useMemo(() => {
+    return [...filteredLogs].sort((a, b) => {
+      const dateA = dayjs(`${a.date} ${a.time}`, "YYYY-MM-DD HH:mm");
+      const dateB = dayjs(`${b.date} ${b.time}`, "YYYY-MM-DD HH:mm");
+      return dateB - dateA;
+    });
+  }, [filteredLogs]);
+
+  const totalPages = Math.ceil(sortedLogs.length / pageSize);
 
   const currentPageLogs = useMemo(() => {
-    return filteredLogs.slice(
+    return sortedLogs.slice(
       (currentPage - 1) * pageSize,
       currentPage * pageSize
     );
-  }, [filteredLogs, currentPage, pageSize]);
+  }, [sortedLogs, currentPage, pageSize]);
 
   const handleDateChange = (value) => {
     setSelectedDate(value);
@@ -59,6 +67,12 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
+        {currentPageLogs.length === 0 && !selectedDate && (
+          <p className="text-sm">No records available. Click on "Add New Diaper Change" to add.</p>
+        )}
+        {currentPageLogs.length > 0 &&
+          <p className="text-sm">{filteredLogs.length} time(s) diaper change.</p>
+        }
         {currentPageLogs.length === 0 ? (
           <p className="text-sm">No records for this date.</p>
         ) : (
@@ -74,30 +88,42 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
 
             return (
               <div
-                className="grid grid-cols-4 gap-4 border items-center p-4 rounded-xl text-center"
                 key={i}
+                className="flex flex-row flex-1 justify-between border p-4 rounded-xl text-center md:text-left items-center"
               >
-                <div className="text-left">
-                  <p className="font-medium">{formattedDate}</p>
-                  <p className="font-medium">{formattedTime}</p>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Date & Time */}
+                  <div className="flex flex-col">
+                    <p className="font-medium text-left">{formattedDate}</p>
+                    <p className="font-medium text-left">{formattedTime}</p>
+                  </div>
+
+                  {/* Color */}
+                  <div className="flex items-center justify-start md:justify-start space-x-2">
+                    <div
+                      className="w-5 h-5 rounded-full border"
+                      style={{ backgroundColor: colorObj?.colorCode || "#ccc" }}
+                    />
+                    <p className="font-medium">{color}</p>
+                  </div>
+
+                  {/* Type */}
+                  <div className="flex items-center justify-start space-x-2">
+                    {typeObj?.icons}
+                    <p className="font-medium">{type}</p>
+                  </div>
                 </div>
-                <div className="inline-flex space-x-2 justify-start items-center">
-                  <div
-                    className="w-5 h-5 rounded-full border"
-                    style={{ backgroundColor: colorObj?.colorCode || "#ccc" }}
-                  />
-                  <p className="font-medium">{color}</p>
+
+                {/* Delete button */}
+                <div className="flex justify-center md:justify-end">
+                  <button
+                    className="px-8 text-red-500 text-sm inline-flex items-center font-medium"
+                    onClick={() => deleteRecord(id)}
+                  >
+                    <LucideTrash2 className="size-5 mr-1" />
+                    <span className="hidden md:inline">Delete</span>
+                  </button>
                 </div>
-                <div className="inline-flex space-x-2 justify-center items-center">
-                  {typeObj?.icons}
-                  <p className="font-medium">{type}</p>
-                </div>
-                <button
-                  className="text-red-500 text-sm inline-flex font-medium mx-auto"
-                  onClick={() => deleteRecord(id)}
-                >
-                  <LucideTrash2 className="size-5 mr-4" />
-                </button>
               </div>
             );
           })
@@ -122,7 +148,7 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
           >
-            <LucideChevronRightCircle className="size-8"/>
+            <LucideChevronRightCircle className="size-8" />
           </button>
         </div>
       )}

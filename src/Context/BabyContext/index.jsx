@@ -5,6 +5,7 @@ import { useAuth } from '../AuthContext';
 import { addPoopLog } from '../../services/addPoopLog';
 import { getPoopLog } from '../../services/getPoopLog';
 import { deletePoopLog } from '../../services/deletePoopLog';
+import toast from 'react-hot-toast';
 
 const BabyDataContext = createContext();
 
@@ -95,12 +96,15 @@ export const BabyDataProvider = ({ children }) => {
   const handleAddNewPoopLog = async (newLog) => {
     setBabyPoopLogs(prev => [...prev, newLog]);
     await addPoopLog(user.uid, newLog);
+    toast.success(`Log ${newLog.date} at ${newLog.time} added successfully`);
     await refreshPoopLogs(user.uid);
   };
 
   const handleDeletePoopLog = async (logid) => {
     setBabyPoopLogs(prev => prev.filter((_, i) => i !== logid));
+    const matchedLog = babyPoopLogs.find((log, i) => log.id === logid);
     await deletePoopLog(user.uid, logid);
+    toast.success(`Log ${matchedLog.date} at ${matchedLog.time} deleted successfully`);
     await refreshPoopLogs(user.uid);
   };
 
