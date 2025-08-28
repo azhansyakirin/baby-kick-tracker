@@ -1,8 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import { LucideX } from 'lucide-react';
 
-export default function Modal({ trigger, title, children, footer , open, onOpenChange}) {
+export default function Modal({ trigger, title, children, footer, open, onOpenChange }) {
+
   return (
-    <Dialog.Root  open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Trigger asChild>
         {trigger}
       </Dialog.Trigger>
@@ -13,7 +15,7 @@ export default function Modal({ trigger, title, children, footer , open, onOpenC
           className="z-50 fixed bg-white rounded-xl shadow-lg top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-3xl max-h-[80%] overflow-y-auto p-6 sm:p-8 md:p-10"
         >
           {title && (
-            <Dialog.Title className="text-xl font-bold mb-4">{title}</Dialog.Title>
+            <Dialog.Title className="text-xl font-bold mb-2 flex justify-between">{title} <button onClick={onOpenChange}><LucideX /></button></Dialog.Title>
           )}
           <div className="flex flex-col gap-4 overflow-y-scroll">
             {children}
