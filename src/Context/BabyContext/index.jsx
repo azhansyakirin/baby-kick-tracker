@@ -2,6 +2,9 @@ import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from '../../config/firebase';
 import { useAuth } from '../AuthContext';
+import { addPoopLog } from '../../services/addPoopLog';
+import { getPoopLog } from '../../services/getPoopLog';
+import { deletePoopLog } from '../../services/deletePoopLog';
 
 const BabyDataContext = createContext();
 
@@ -15,6 +18,7 @@ export const BabyDataProvider = ({ children }) => {
   const [count, setCount] = useState(0);
   const updateTimeoutRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [babyPoopLogs, setBabyPoopLogs] = useState([]);
 
   useEffect(() => {
     setLoading(true)
@@ -31,11 +35,13 @@ export const BabyDataProvider = ({ children }) => {
         setBabyGender(data.babyGender || '');
         setKicks(data.kicks || []);
         setCount((data.kicks || []).length);
+        setBabyPoopLogs(data.babyPoopLogs || []);
       } else {
         await setDoc(userRef, {
           babyName: '',
           babyGender: '',
           kicks: [],
+          babyPoopLogs: [],
           parentName: user.displayName || '',
           createdAt: Date.now(),
         });
@@ -60,7 +66,8 @@ export const BabyDataProvider = ({ children }) => {
   const saveUserData = async (
     updatedKicks = kicks,
     updatedName = babyName,
-    updatedGender = babyGender
+    updatedGender = babyGender,
+    updatedPoopLogs = babyPoopLogs,
   ) => {
     if (!user) return;
 
@@ -69,6 +76,7 @@ export const BabyDataProvider = ({ children }) => {
       babyGender: updatedGender ?? '',
       kicks: updatedKicks ?? [],
       parentName: user.name ?? '',
+      babyPoopLogs: updatedPoopLogs ?? [],
     }, { merge: true });
   };
 
@@ -77,6 +85,23 @@ export const BabyDataProvider = ({ children }) => {
     updateTimeoutRef.current = setTimeout(() => {
       saveUserData(updatedKicks);
     }, 500);
+  };
+
+  const refreshPoopLogs = async (userId) => {
+    const logs = await getPoopLog(userId);
+    setBabyPoopLogs(logs);
+  };
+
+  const handleAddNewPoopLog = async (newLog) => {
+    setBabyPoopLogs(prev => [...prev, newLog]);
+    await addPoopLog(user.uid, newLog);
+    await refreshPoopLogs(user.uid);
+  };
+
+  const handleDeletePoopLog = async (logid) => {
+    setBabyPoopLogs(prev => prev.filter((_, i) => i !== logid));
+    await deletePoopLog(user.uid, logid);
+    await refreshPoopLogs(user.uid);
   };
 
   return (
@@ -93,6 +118,9 @@ export const BabyDataProvider = ({ children }) => {
         count,
         setCount,
         loading,
+        babyPoopLogs,
+        handleAddNewPoopLog,
+        handleDeletePoopLog,
       }}
     >
       {children}
