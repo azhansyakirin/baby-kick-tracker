@@ -167,7 +167,7 @@ export const Home = () => {
           value={babyName}
           onChange={handleBabyNameChange}
           placeholder="Enter your baby name"
-          className="w-full px-4 py-2 uppercase tracking-widest text-xl md:text-3xl text-center border-none outline-none"
+          className="w-full px-4 py-2 tracking-tight font-semibold text-xl md:text-3xl text-center border-none outline-none"
         />
         <div className="flex items-center justify-center space-x-6">
           <label
