@@ -1,6 +1,8 @@
 @import "https://fonts.googleapis.com/css2?family=Schoolbell&display=swap";
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Chilanka&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
 @import "tailwindcss";
 
@@ -12,9 +14,22 @@
   --text-secondary: #3e2c23;
   --highlight: #a47148;
 
-  font-family: "Chilanka", "Poppins", system-ui, sans-serif;
+  --font-size-xs: clamp(0.75rem, 0.7rem + 0.1vw, 0.8125rem); /* 12–13px */
+  --font-size-sm: clamp(0.8125rem, 0.75rem + 0.15vw, 0.875rem); /* 13–14px */
+  --font-size-base: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); /* 14–16px */
+  --font-size-lg: clamp(1rem, 0.9rem + 0.3vw, 1.125rem); /* 16–18px */
+  --font-size-xl: clamp(1.125rem, 1rem + 0.4vw, 1.25rem); /* 18–20px */
+  --font-size-2xl: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); /* 20–24px */
+  --font-size-3xl: clamp(1.5rem, 1.3rem + 0.6vw, 1.75rem); /* 24–28px */
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  font-family: system-ui, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: -0.025em;
 
   max-width: 1280px;
   overflow-x: hidden;
@@ -22,6 +37,10 @@
   margin: auto;
 
   background-color: var(--background);
+  box-sizing: border-box;
+  width: 100vw;
+  text-overflow: break-word;
+  overflow-wrap: break-word;
 
   color: var(--text-primary);
   /* background-color: #242424; */
@@ -50,6 +69,61 @@
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
+  }
+
+  /* Typography scale */
+  h1 {
+    font-size: var(--font-size-3xl); /* 24–28px */
+    line-height: var(--line-height-tight);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: var(--font-size-2xl); /* 20–24px */
+    line-height: var(--line-height-tight);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-size: var(--font-size-xl); /* 18–20px */
+    line-height: var(--line-height-normal);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  h4 {
+    font-size: var(--font-size-lg); /* 16–18px */
+    line-height: var(--line-height-normal);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  h5 {
+    font-size: var(--font-size-base); /* 14–16px */
+    line-height: var(--line-height-normal);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  h6 {
+    font-size: var(--font-size-sm); /* 13–14px */
+    line-height: var(--line-height-normal);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  p,
+  li,
+  span {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+  }
+
+  small {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-normal);
   }
 
   .remarks-cell {
