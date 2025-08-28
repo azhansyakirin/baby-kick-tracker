@@ -18,6 +18,9 @@ import { Loader } from '../components/Loader';
 import { useNavigate } from 'react-router-dom';
 import { PrivateLayout } from '../components/Layout/PrivateLayout';
 import { useBaby } from '../Context/BabyContext';
+import PoopTracker from './YourBaby/PoopTracker';
+import KickTracker from './YourBaby/KickTracker';
+import FeedingTimeTracker from './YourBaby/FeedingTimeTracker';
 
 const PrivateRoute = () => {
   const { user } = useAuth();
@@ -64,7 +67,12 @@ const RootRouter = () => {
 
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/baby" element={<YourBaby />} />
+            <Route path="/baby" element={<Outlet />}>
+              <Route index element={<YourBaby />} />
+              <Route path="kicks" element={<KickTracker />} />
+              <Route path="poops" element={<PoopTracker />} />
+              <Route path="feeding-time" element={<FeedingTimeTracker />} />
+            </Route>
             <Route path="/appointments" element={<YourAppointments />} />
             <Route path="/records" element={<YourRecords />} />
             <Route path="/journey" element={<YourJourney />} />
