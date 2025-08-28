@@ -18,7 +18,7 @@ export const YourAppointments = () => {
   }
 
   return (
-    <div id="appointment-page" className="my-4 grid md:grid-cols-[3fr_1fr] grid-cols-1 gap-4 font-[Inter]">
+    <div id="appointment-page" className="my-4 grid md:grid-cols-[3fr_2fr] grid-cols-1 gap-4">
 
       {/* Appointment List */}
       <div className="flex flex-col gap-2">
