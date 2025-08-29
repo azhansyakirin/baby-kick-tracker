@@ -68,6 +68,9 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
     { value: 'Dry', label: 'Dry' },
   ];
 
+  const defaultInputDiv = `flex flex-col md:my-1`;
+  const defaultInputClass = `py-3 px-4 rounded-lg border`;
+
   const handleSave = () => {
 
     if (!logDate || !logTime || !logType || !logColor) {
@@ -100,24 +103,24 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
   };
 
   return (
-    <Modal open={toggleAddLog} onOpenChange={handleToggleAddLog} title={<div className="inline-flex space-x-2 items-center"><Icon iconNode={diaper} /> <span>Add New Diaper Change</span></div>}>
+    <Modal open={toggleAddLog} onOpenChange={handleToggleAddLog} title={<div className="inline-flex gap-2 items-center"><Icon iconNode={diaper} size={30} /> Add New Diaper Change</div>}>
       <section className="mb-4">
         <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div>
+          <div className={defaultInputDiv}>
             <h4>Date</h4>
             <input
               type="date"
-              className="w-full border rounded-lg p-3"
+              className={defaultInputClass}
               value={logDate}
               placeholder="Select Date"
               onChange={(e) => setLogDate(e.target.value)}
             />
           </div>
-          <div>
+          <div className={defaultInputDiv}>
             <h4>Time</h4>
             <input
               type="time"
-              className="w-full border rounded-lg p-3"
+              className={defaultInputClass}
               value={logTime}
               required
               onChange={(e) => setLogTime(e.target.value)}
