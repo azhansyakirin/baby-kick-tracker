@@ -1,6 +1,47 @@
 import { useState, useMemo } from "react";
 import dayjs from "dayjs";
-import { LucideBean, LucideChevronLeftCircle, LucideChevronRightCircle, LucideDroplets, LucideTrash2 } from "lucide-react";
+import { Filter, LucideBean, LucideCalendar, LucideChevronLeftCircle, LucideChevronRightCircle, LucideDroplets, LucideTrash2, LucideX } from "lucide-react";
+import * as Popover from "@radix-ui/react-popover";
+
+export default function DateFilterPopover({ selectedDate, onChange }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button className="p-2 inline-flex items-center space-x-4 rounded-lg border shadow-sm hover:bg-gray-100">
+          <Filter className="size-5" />
+        </button>
+      </Popover.Trigger>
+
+      <Popover.Content
+        className="p-3 bg-white rounded-lg shadow-md border w-60"
+        sideOffset={6}
+      >
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium inline-flex space-x-2 items-center"><LucideCalendar size={20} /> <span className="ml-1/2">Select Date</span></label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => onChange(e.target.value)}
+            className="border rounded-lg px-3 py-1 text-sm w-full"
+          />
+        </div>
+
+        {selectedDate && ( /* For remove filter when date selected */
+          <div className="mt-4 text-left">
+            <button
+              className="text-xs text-red-500 inline-flex items-center hover:underline"
+              onClick={() => onChange("")}
+            >
+              <LucideX size={18} />
+              <span className="ml-1">Remove Filter</span>
+            </button>
+          </div>
+        )}
+      </Popover.Content>
+    </Popover.Root>
+  );
+}
+
 
 export const RecentLogs = ({ recentLogs, deleteRecord }) => {
   const [selectedDate, setSelectedDate] = useState("");
@@ -58,11 +99,9 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Recent Logs</h2>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => handleDateChange(e.target.value)}
-          className="border rounded-lg px-3 py-1 text-sm"
+        <DateFilterPopover
+          selectedDate={selectedDate}
+          onChange={handleDateChange}
         />
       </div>
 
