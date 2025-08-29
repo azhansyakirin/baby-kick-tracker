@@ -2,6 +2,8 @@ import Modal from "../../../../../components/Modal";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
+import { Icon } from "lucide-react";
+import { diaper } from "@lucide/lab";
 
 
 const Select = ({ options, className }) => {
@@ -98,15 +100,16 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
   };
 
   return (
-    <Modal open={toggleAddLog} onOpenChange={handleToggleAddLog} title="Add New Diaper Change">
+    <Modal open={toggleAddLog} onOpenChange={handleToggleAddLog} title={<div className="inline-flex space-x-2 items-center"><Icon iconNode={diaper} /> <span>Add New Diaper Change</span></div>}>
       <section className="mb-4">
         <div className="grid md:grid-cols-2 gap-4 mb-4">
           <div>
             <h4>Date</h4>
             <input
               type="date"
-              className="w-full border rounded-lg p-2"
+              className="w-full border rounded-lg p-3"
               value={logDate}
+              placeholder="Select Date"
               onChange={(e) => setLogDate(e.target.value)}
             />
           </div>
@@ -114,7 +117,7 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
             <h4>Time</h4>
             <input
               type="time"
-              className="w-full border rounded-lg p-2"
+              className="w-full border rounded-lg p-3"
               value={logTime}
               required
               onChange={(e) => setLogTime(e.target.value)}
