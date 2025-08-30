@@ -115,7 +115,7 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
         {currentPageLogs.length === 0 ? (
           <p className="text-sm">No records for this date.</p>
         ) : (
-          currentPageLogs.map(({ id, date, time, type, color }, i) => {
+          currentPageLogs.map(({ id, date, time, type, color, notes }, i) => {
             const formattedTime = dayjs(
               `${date} ${time}`,
               "YYYY-MM-DD HH:mm"
@@ -130,15 +130,15 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
                 key={i}
                 className="flex flex-row flex-1 justify-between border p-4 rounded-xl text-center md:text-left items-center"
               >
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-1 md:gap-4">
                   {/* Date & Time */}
-                  <div className="flex flex-col">
+                  <div className="flex flex-row gap-1 md:flex-col">
                     <p className="font-medium text-left">{formattedDate}</p>
                     <p className="font-medium text-left">{formattedTime}</p>
                   </div>
 
                   {/* Color */}
-                  <div className="flex items-center justify-start md:justify-start space-x-2">
+                  <div className="flex items-center justify-start md:justify-center space-x-2">
                     <div
                       className="w-5 h-5 rounded-full border"
                       style={{ backgroundColor: colorObj?.colorCode || "#ccc" }}
@@ -147,20 +147,29 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
                   </div>
 
                   {/* Type */}
-                  <div className="flex items-center justify-start space-x-2">
+                  <div className="flex items-center justify-start md:justify-center space-x-2">
                     {typeObj?.icons}
                     <p className="font-medium">{type}</p>
+                  </div>
+
+                  {/* Notes - only show if exists */}
+                  <div className="">
+                    {notes ? (
+                      <p className="text-left line-clamp-2">{notes}</p>
+                    ) : (
+                      <p className="text-left italic">-</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Delete button */}
                 <div className="flex justify-center md:justify-end">
                   <button
-                    className="px-8 text-red-500 text-sm inline-flex items-center font-medium"
+                    className="md:px-8 text-red-500 text-sm inline-flex items-center font-medium"
                     onClick={() => deleteRecord(id)}
                   >
                     <LucideTrash2 className="size-5 mr-1" />
-                    <span className="hidden md:inline">Delete</span>
+                    <span className="inline">Delete</span>
                   </button>
                 </div>
               </div>
@@ -170,27 +179,29 @@ export const RecentLogs = ({ recentLogs, deleteRecord }) => {
       </div>
 
       {/* ✅ Pagination controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-8 space-x-4">
-          <button
-            className="disabled:opacity-50"
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            <LucideChevronLeftCircle className="size-8" />
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            className="disabled:opacity-50"
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            <LucideChevronRightCircle className="size-8" />
-          </button>
-        </div>
-      )}
-    </section>
+      {
+        totalPages > 1 && (
+          <div className="flex justify-center items-center mt-8 space-x-4">
+            <button
+              className="disabled:opacity-50"
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <LucideChevronLeftCircle className="size-8" />
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="disabled:opacity-50"
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              <LucideChevronRightCircle className="size-8" />
+            </button>
+          </div>
+        )
+      }
+    </section >
   );
 };

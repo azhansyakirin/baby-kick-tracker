@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-hot-toast";
 import { Icon } from "lucide-react";
 import { diaper } from "@lucide/lab";
+import clsx from "clsx";
 
 
 const Select = ({ options, className }) => {
@@ -52,6 +53,7 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
   const [logTime, setLogTime] = useState('');
   const [logType, setLogType] = useState('');
   const [logColor, setLogColor] = useState('');
+  const [logNotes, setLogNotes] = useState('');
 
   const POOP_COLORS = [
     { value: 'Light Brown', label: 'Light Brown', colorCode: '#A0522D' },
@@ -71,7 +73,8 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
   const defaultInputDiv = `flex flex-col md:my-1`;
   const defaultInputClass = `py-3 px-4 rounded-lg border`;
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.preventDefault();
 
     if (!logDate || !logTime || !logType || !logColor) {
       const mapError = {
@@ -91,6 +94,7 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
       time: logTime,
       color: logColor,
       type: logType,
+      notes: logNotes || '',
     };
 
     handleSaveChange(newLog);
@@ -99,71 +103,87 @@ export const AddNewLog = ({ toggleAddLog, handleToggleAddLog, handleSaveChange }
     setLogTime('');
     setLogType('');
     setLogColor('');
+    setLogNotes('');
     handleToggleAddLog();
   };
 
   return (
     <Modal open={toggleAddLog} onOpenChange={handleToggleAddLog} title={<div className="inline-flex gap-2 items-center"><Icon iconNode={diaper} size={30} /> Add New Diaper Change</div>}>
-      <section className="mb-4">
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div className={defaultInputDiv}>
-            <h4>Date</h4>
-            <input
-              type="date"
-              className={defaultInputClass}
-              value={logDate}
-              placeholder="Select Date"
-              onChange={(e) => setLogDate(e.target.value)}
-            />
+      <form onSubmit={handleSave}>
+        <section className="mb-4">
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className={defaultInputDiv}>
+              <h4>Date</h4>
+              <input
+                type="date"
+                className={defaultInputClass}
+                value={logDate}
+                placeholder="Select Date"
+                onChange={(e) => setLogDate(e.target.value)}
+              />
+            </div>
+            <div className={defaultInputDiv}>
+              <h4>Time</h4>
+              <input
+                type="time"
+                className={defaultInputClass}
+                value={logTime}
+                required
+                onChange={(e) => setLogTime(e.target.value)}
+              />
+            </div>
           </div>
-          <div className={defaultInputDiv}>
-            <h4>Time</h4>
-            <input
-              type="time"
-              className={defaultInputClass}
-              value={logTime}
-              required
-              onChange={(e) => setLogTime(e.target.value)}
-            />
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="col-span-2">
+              <h4>Poop Type</h4>
+              <Radio
+                options={POOP_TYPES}
+                name="poopType"
+                value={logType}
+                onChange={setLogType}
+              />
+            </div>
           </div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div className="col-span-2">
-            <h4>Poop Type</h4>
-            <Radio
-              options={POOP_TYPES}
-              name="poopType"
-              value={logType}
-              onChange={setLogType}
-            />
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="col-span-2">
+              <h4>Poop Color</h4>
+              <Radio
+                options={POOP_COLORS}
+                name="poopColor"
+                value={logColor}
+                onChange={setLogColor}
+              />
+            </div>
           </div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          <div className="col-span-2">
-            <h4>Poop Color</h4>
-            <Radio
-              options={POOP_COLORS}
-              name="poopColor"
-              value={logColor}
-              onChange={setLogColor}
-            />
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="col-span-2">
+              <h4>Remarks</h4>
+              <textarea
+                className={clsx(defaultInputClass, 'w-full')}
+                value={logNotes}
+                placeholder="Add Notes (optional)"
+                rows={3}
+                maxLength={200}
+                onChange={(e) => setLogNotes(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-      </section>
-      <section className="flex justify-end gap-4">
-        <button
-          onClick={handleToggleAddLog}
-          className="px-4 py-2 border border-[var(--text-primary)] rounded hover:shadow-md"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleSave}
-          className="px-4 py-2 bg-[var(--text-primary)] text-white rounded hover:shadow-md"
-        >
-          Save Record
-        </button>
-      </section>
+        </section>
+        <section className="flex justify-end gap-4">
+          <button
+            onClick={handleToggleAddLog}
+            className="px-4 py-2 border border-[var(--text-primary)] rounded hover:shadow-md"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-[var(--text-primary)] text-white rounded hover:shadow-md"
+          >
+            Save Record
+          </button>
+        </section>
+      </form>
     </Modal>
   );
 }
