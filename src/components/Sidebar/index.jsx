@@ -14,12 +14,12 @@ export const Sidebar = ({ handleLogoutUser }) => {
     { id: 2, path: '/baby', label: 'Your Baby', icon: 'baby' },
     { id: 3, path: '/appointments', label: 'Your Appointment', icon: 'calendar' },
     { id: 4, path: '/records', label: 'Your Records', icon: 'folder' },
-    { id: 5, path: '/journey', label: 'Your Journey', icon: 'thumbnail' },
+    // { id: 5, path: '/journey', label: 'Your Journey', icon: 'thumbnail' },
   ]
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white rounded-t-lg shadow-md p-1 flex md:flex-col md:top-0 md:left-0 md:h-full md:w-16">
-      <div className="flex h-full flex-row md:flex-col gap-2 justify-between items-center sm:overflow-x-auto">
+      <div className="flex flex-1 h-full flex-row md:flex-col gap-2 justify-between items-center sm:overflow-x-auto">
         <ul className="flex flex-row md:flex-col justify-center items-center gap-2">
           {appPath.map(({ id, path, label, icon }) => (
             <li key={id} className={clsx({
